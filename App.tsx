@@ -1,11 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
-import { Post } from './types';
-import { AUTHOR_IMAGE, AUTHOR_NAME, INITIAL_POST_CONTENT, APP_NAME } from './constants';
-import PostCard from './components/PostCard';
-import { generateTimedMessage } from './services/geminiService';
+import { Post } from './types.ts';
+import { AUTHOR_IMAGE, AUTHOR_NAME, INITIAL_POST_CONTENT, APP_NAME } from './constants.ts';
+import PostCard from './components/PostCard.tsx';
+import { generateTimedMessage } from './services/geminiService.ts';
 
-const STORAGE_KEY = 'spacetramoya_posts_v4'; // Updated to v4 for video content
+const STORAGE_KEY = 'spacetramoya_posts_v4';
 const LAST_GEN_KEY = 'spacetramoya_last_gen_window';
 
 const App: React.FC = () => {
@@ -38,7 +38,7 @@ const App: React.FC = () => {
         comments: 0,
       };
 
-      // Bangkok Press Conference Post with added Video
+      // Bangkok Press Conference Post with Video
       const pressConferencePost: Post = {
         id: 'press-conf-' + Date.now(),
         authorName: AUTHOR_NAME,
@@ -151,7 +151,7 @@ const App: React.FC = () => {
       </header>
 
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-8">
-        <div className="mb-8 text-center">
+        <div className="mb-8 text-center animate-fade-in">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-transparent">
             Flash Informativo
           </h2>
@@ -160,7 +160,7 @@ const App: React.FC = () => {
           </p>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
           {posts.map(post => (
             <PostCard key={post.id} post={post} />
           ))}
