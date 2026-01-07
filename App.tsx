@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { Post } from './types.ts';
-import { AUTHOR_IMAGE, AUTHOR_NAME, INITIAL_POST_CONTENT, APP_NAME } from './constants.ts';
-import PostCard from './components/PostCard.tsx';
-import { generateTimedMessage } from './services/geminiService.ts';
+import { Post } from './types';
+import { AUTHOR_IMAGE, AUTHOR_NAME, INITIAL_POST_CONTENT, APP_NAME } from './constants';
+import PostCard from './components/PostCard';
+import { generateTimedMessage } from './services/geminiService';
 
 const STORAGE_KEY = 'spacetramoya_posts_v4';
 const LAST_GEN_KEY = 'spacetramoya_last_gen_window';
@@ -19,7 +19,6 @@ const App: React.FC = () => {
       const now = new Date();
       const timeStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-      // Caracas Post
       const caracasStagePost: Post = {
         id: 'caracas-stage-' + Date.now(),
         authorName: AUTHOR_NAME,
@@ -38,7 +37,6 @@ const App: React.FC = () => {
         comments: 0,
       };
 
-      // Bangkok Press Conference Post with Video
       const pressConferencePost: Post = {
         id: 'press-conf-' + Date.now(),
         authorName: AUTHOR_NAME,
