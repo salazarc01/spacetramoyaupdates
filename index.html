@@ -9,7 +9,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            background-color: #020617;
+            background-color: #020617; /* Azul muy oscuro */
+            background-image: radial-gradient(circle at top right, #1e1b4b, #020617), 
+                              radial-gradient(circle at bottom left, #312e81, #020617);
+            background-attachment: fixed;
             color: #f8fafc;
             margin: 0;
             padding: 0;
@@ -25,6 +28,13 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
     </style>
 <script type="importmap">
