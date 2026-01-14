@@ -20,10 +20,14 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    const savedPosts = localStorage.getItem(STORAGE_KEY);
-    if (savedPosts) {
-      setPosts(JSON.parse(savedPosts));
-    } else {
+    try {
+      const savedPosts = localStorage.getItem(STORAGE_KEY);
+      if (savedPosts) {
+        setPosts(JSON.parse(savedPosts));
+      } else {
+        throw new Error("No hay datos guardados");
+      }
+    } catch (e) {
       const postMerida: Post = {
         id: 'merida-post',
         authorName: AUTHOR_NAME,
@@ -71,7 +75,6 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // Efecto mejorado para scroll automático si hay un hash en la URL
   useEffect(() => {
     if (posts.length > 0 && window.location.hash) {
       const id = window.location.hash.substring(1);
@@ -85,13 +88,12 @@ const App: React.FC = () => {
         return false;
       };
 
-      // Intentar scroll inmediato y luego re-intentar si falla (para asegurar carga de imágenes)
       if (!attemptScroll()) {
         const observer = new MutationObserver(() => {
           if (attemptScroll()) observer.disconnect();
         });
         observer.observe(document.body, { childList: true, subtree: true });
-        setTimeout(() => observer.disconnect(), 3000); // Límite de 3 segundos
+        setTimeout(() => observer.disconnect(), 3000);
       }
     }
   }, [posts]);

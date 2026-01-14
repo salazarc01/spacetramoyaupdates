@@ -5,7 +5,8 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   define: {
-    'process.env': process.env,
+    // Definimos solo lo necesario para el cliente
+    'process.env.API_KEY': JSON.stringify(process.env.API_KEY),
     'process.platform': JSON.stringify('browser')
   },
   build: {
