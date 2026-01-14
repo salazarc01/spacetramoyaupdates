@@ -10,6 +10,7 @@ export interface Post {
   images?: string[];
   videoEmbed?: string;
   likes: number;
+  hasLiked?: boolean; // Nuevo: rastrear si el usuario actual dio like
   comments: number;
 }
 

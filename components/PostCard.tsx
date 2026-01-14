@@ -1,18 +1,38 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Post } from '../types';
 
 interface PostCardProps {
   post: Post;
+  onToggleLike: (id: string) => void;
 }
 
-const PostCard: React.FC<PostCardProps> = ({ post }) => {
+const PostCard: React.FC<PostCardProps> = ({ post, onToggleLike }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [showMetadata, setShowMetadata] = useState(false);
+  const [isTargeted, setIsTargeted] = useState(false);
   const pressTimer = useRef<number | null>(null);
 
+  // Detectar si este post es el objetivo del hash en la URL para aplicar el resplandor
+  useEffect(() => {
+    const handleHashChange = () => {
+      if (window.location.hash === `#${post.id}`) {
+        setIsTargeted(true);
+        setTimeout(() => setIsTargeted(false), 5000); // El resplandor dura 5 segundos
+      }
+    };
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [post.id]);
+
   const shareToWhatsApp = () => {
-    const textToShare = `*${post.authorName}* (${post.timestamp})\n\n${post.content}\n\n_Vía Spacetramoya Updates_`;
+    // Usar el dominio real o local dinámicamente
+    const baseUrl = "https://spacetramoyaupdates.vercel.app";
+    const shareUrl = `${baseUrl}/#${post.id}`;
+    
+    const textToShare = `👑 *NOTICIA EXCLUSIVA* 👑\n\n*${post.authorName}* acaba de publicar:\n"${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}"\n\n👇 *Lee la nota completa aquí:* \n${shareUrl}\n\n_Vía Spacetramoya Updates_`;
+    
     const encodedText = encodeURIComponent(textToShare);
     window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
   };
@@ -35,7 +55,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
     if (!post.images || post.images.length === 0) return null;
 
     const count = post.images.length;
-    let gridClass = "grid gap-1 mt-4 rounded-xl overflow-hidden border border-white/5 relative shadow-xl";
+    let gridClass = "grid gap-1 mt-4 rounded-xl overflow-hidden border border-white/5 relative shadow-xl w-full";
 
     if (count === 1) gridClass += " grid-cols-1";
     else if (count === 2) gridClass += " grid-cols-2 h-56";
@@ -83,7 +103,17 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   };
 
   return (
-    <div className="bg-slate-900/40 backdrop-blur-sm border border-white/5 rounded-[2rem] p-5 shadow-2xl relative transition-all duration-500 flex flex-col items-center">
+    <div 
+      id={post.id} 
+      className={`bg-slate-900/40 backdrop-blur-sm border rounded-[2rem] p-5 shadow-2xl relative transition-all duration-700 flex flex-col items-center scroll-mt-24 
+        ${isTargeted ? 'border-indigo-500 ring-4 ring-indigo-500/20 scale-[1.02] shadow-indigo-500/30' : 'border-white/5'}`}
+    >
+      {isTargeted && (
+        <div className="absolute -top-4 bg-indigo-600 text-white text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest animate-bounce shadow-lg shadow-indigo-500/40">
+          Noticia Compartida
+        </div>
+      )}
+
       {/* Centered Author Info Header */}
       <div className="flex flex-col items-center text-center mb-4">
         <div className="relative mb-3">
@@ -115,22 +145,23 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
       {/* Video Embed centered width */}
       {post.videoEmbed && (
-        <div className="w-full relative rounded-2xl overflow-hidden border border-white/5 shadow-2xl bg-black/20">
+        <div className="w-full relative rounded-2xl overflow-hidden border border-white/5 shadow-2xl bg-black/20 mb-4">
           <div dangerouslySetInnerHTML={{ __html: post.videoEmbed }} />
         </div>
       )}
 
       {/* Image grid */}
-      <div className="w-full">
-        {renderImageGrid()}
-      </div>
+      {renderImageGrid()}
 
       {/* Footer centered items */}
       <div className="w-full mt-6 pt-4 border-t border-white/5 flex flex-col items-center space-y-4">
         <div className="flex items-center space-x-6">
-          <button className="group flex items-center space-x-2 text-slate-400 hover:text-rose-500 transition-all">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center group-hover:bg-rose-500/10 transition-all border border-white/5 group-hover:border-rose-500/20">
-              <i className="fa-regular fa-heart text-lg"></i>
+          <button 
+            onClick={() => onToggleLike(post.id)}
+            className={`group flex items-center space-x-2 transition-all ${post.hasLiked ? 'text-rose-500' : 'text-slate-400 hover:text-rose-500'}`}
+          >
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all border ${post.hasLiked ? 'bg-rose-500/10 border-rose-500/20' : 'border-white/5 group-hover:bg-rose-500/10 group-hover:border-rose-500/20'} active:scale-75`}>
+              <i className={`${post.hasLiked ? 'fa-solid' : 'fa-regular'} fa-heart text-lg`}></i>
             </div>
             <span className="text-xs font-black tracking-widest">{post.likes.toLocaleString()}</span>
           </button>
@@ -138,10 +169,10 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         
         <button 
           onClick={shareToWhatsApp}
-          className="flex items-center justify-center space-x-3 w-full max-w-[200px] bg-emerald-500/10 hover:bg-emerald-500 text-emerald-500 hover:text-white py-3 rounded-full transition-all active:scale-95 border border-emerald-500/20 font-black uppercase tracking-widest text-[10px]"
+          className="flex items-center justify-center space-x-3 w-full max-w-[220px] bg-emerald-500/10 hover:bg-emerald-500 text-emerald-500 hover:text-white py-3 rounded-full transition-all active:scale-95 border border-emerald-500/20 font-black uppercase tracking-widest text-[10px]"
         >
           <i className="fa-brands fa-whatsapp text-lg"></i>
-          <span>Compartir en WhatsApp</span>
+          <span>Compartir</span>
         </button>
       </div>
 
