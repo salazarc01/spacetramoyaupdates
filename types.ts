@@ -8,9 +8,16 @@ export interface Post {
   timestamp: string;
   content: string;
   images?: string[];
-  videoEmbed?: string; // New property for video iframes/embeds
+  videoEmbed?: string;
   likes: number;
   comments: number;
+}
+
+export interface Candidate {
+  id: string;
+  name: string;
+  location: string;
+  image: string;
 }
 
 export interface DailyMessage {
